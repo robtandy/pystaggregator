@@ -46,8 +46,9 @@ class Client(Thread):
                 # this call will block until we are connected, no sense in continuing
                 # if we are not
                 self._connect()
-            message = self._build_message()
+            message, num_stats = self._build_message()
             if len(message) > 0:
+                log.debug('message is contains {0} stats'.format(num_stats))
                 self._send_message(message)
 
     def stop(self):
@@ -55,7 +56,7 @@ class Client(Thread):
 
     def _build_message(self):
         m = []
-        timeout = 0.05 # 50ms
+        timeout = 0.250 # 50ms
         now = last_time = time.time()
         
         # this loop will get as many messages as the queue will
@@ -69,15 +70,13 @@ class Client(Thread):
             except Empty:
                 pass
             last_time = time.time()
-
-        return '\n'.join(m) 
+        return '\n'.join(m), len(m)
 
     def _send_message(self, message):
-        log.debug('sending {0}'.format(message))
+        log.debug('sending message {0}'.format(message))
         try:
             self.socket.sendall(message)
             self.socket.send('\n')
-            log.debug('{0} sent.'.format(message))
         except IOError as e:
             log.info('could not send message {0}'.format(message))
             self.connected = False
@@ -123,15 +122,17 @@ class Counter(object):
 
 
 class Timer(object):
-    def __init__(self, name):
+    def __init__(self, name=None):
         self.name = name
 
     def start(self):
-        self._start = time.time()
+        self._start = time.time() * 1000 # in ms.  See docs for time.clock vs time.time
 
-    def end(self):
-        duration = int(round((time.time() - self._start) * 1000)) # in ms
-        _client.send('{0}:{1}|ms'.format(self.name, duration))
+    def end(self, name=None):
+        name_to_send = name if name is not None else self.name
+
+        duration = int(round(time.time() * 1000 - self._start))
+        _client.send('{0}:{1}|ms'.format(name_to_send, duration))
 
 
 def timer(name):
