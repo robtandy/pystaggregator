@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+import pystaggregator
+
+V = pystaggregator.__version__
 
 setup(name='pystaggregator',
-      version='0.1.1',
+      version=V,
       author='Rob Tandy',
       author_email='rob.tandy@gmail.com',
       url='https://github.com/robtandy/pystaggregator',
