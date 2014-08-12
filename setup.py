@@ -14,5 +14,6 @@ setup(name='pystaggregator',
       python client to provide instrumentaiton that will send stats (timers 
       and counters) to staggregator (https://github.com/robtandy/staggregator),
       a stats aggregator for graphite, in the spirit of statsd.""",
+      install_requires=["six >= 1.7.3", "requests >= 2.2.0"],
       packages=['pystaggregator'],
 )
