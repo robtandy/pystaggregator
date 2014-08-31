@@ -96,7 +96,7 @@ _client = None
 # this helps things like bottlerocket work with gunicorn for example
 _start_args = None
 
-def _start(url, key):
+def start(url, key):
     # save 'em for lazy start later
     global _start_args
     _start_args = (url, key)
